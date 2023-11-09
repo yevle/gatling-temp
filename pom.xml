@@ -21,6 +21,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-java</artifactId>
+      <version>6.6.0</version>
+    </dependency>
+    <dependency>
       <groupId>io.gatling.highcharts</groupId>
       <artifactId>gatling-charts-highcharts</artifactId>
       <version>${gatling.version}</version>
