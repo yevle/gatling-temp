@@ -1,4 +1,4 @@
-import java.nio.file.Paths
+import java.nio.file.{Path, Paths}
 import java.util.Objects.requireNonNull
 
 object IDEPathHelper {
@@ -7,7 +7,7 @@ object IDEPathHelper {
 	private val mavenTargetDirectory = projectRootDir.resolve("target")
 	private val mavenSrcTestDirectory = projectRootDir.resolve("src").resolve("test")
 
-	val mavenSourcesDirectory = mavenSrcTestDirectory.resolve("scala")
+	val mavenSourcesDirectory: Path = mavenSrcTestDirectory.resolve("scala")
 	val mavenResourcesDirectory = mavenSrcTestDirectory.resolve("resources")
 	val mavenBinariesDirectory = mavenTargetDirectory.resolve("test-classes")
 	val resultsDirectory = mavenTargetDirectory.resolve("gatling")
