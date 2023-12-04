@@ -124,14 +124,7 @@ class Demostore extends Simulation {
   }
 
   object Scenarios {
-    def default = scenario("Default Load Test")
-      .during(testDuration) {
-        randomSwitch(
-          75d -> exec(UserJourneys.browseStore),
-          15d -> exec(UserJourneys.abandonCart),
-          10d -> exec(UserJourneys.completePurchase)
-        )
-      }
+
 
     def highPurchase = scenario("High Purchase Scenario")
       .during(testDuration) {
@@ -139,6 +132,15 @@ class Demostore extends Simulation {
           30d -> exec(UserJourneys.browseStore),
           30d -> exec(UserJourneys.abandonCart),
           40d -> exec(UserJourneys.completePurchase)
+        )
+      }
+
+    def default = scenario("Default Load Test")
+      .during(testDuration) {
+        randomSwitch(
+          75d -> exec(UserJourneys.browseStore),
+          15d -> exec(UserJourneys.abandonCart),
+          10d -> exec(UserJourneys.completePurchase)
         )
       }
   }

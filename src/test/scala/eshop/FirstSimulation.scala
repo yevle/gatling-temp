@@ -1,8 +1,8 @@
-package eshop_sim
+package eshop
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import eshop_sim.utils.JsonFormatter
+import eshop.utils.JsonFormatter
 
 class FirstSimulation extends Simulation {
 

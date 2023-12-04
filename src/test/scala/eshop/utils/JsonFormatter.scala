@@ -1,4 +1,4 @@
-package eshop_sim.utils
+package eshop.utils
 
 object JsonFormatter {
     def formatJson(input: String): String = {
