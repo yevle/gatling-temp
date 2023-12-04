@@ -1,9 +1,8 @@
 package eshop_sim
 
-
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import utils.JsonFormatter
+import eshop_sim.utils.JsonFormatter
 
 class FirstSimulation extends Simulation {
 
@@ -78,7 +77,7 @@ class FirstSimulation extends Simulation {
         ).check(bodyString.saveAs("responseBody"))
     ).exec(
       http("getInfo")
-        .get("/eshop/control/category/2/products")
+        .get("/eshop/control/cart/getInfo")
         .headers(headers_general)
         .check(
           status is 200,
@@ -88,7 +87,7 @@ class FirstSimulation extends Simulation {
         .check(bodyString.saveAs("responseBody"))
     ).exec(session => {
       val responseBody = session("responseBody").as[String] // Retrieve the response body from the session
-      println(s"------Response Body /eshop/control/category/2/products: ------\n" + JsonFormatter.formatJson(responseBody)) // Print the response body
+      println(s"------Response Body /eshop/control/cart/getInfo: ------\n" + JsonFormatter.formatJson(responseBody)) // Print the response body
 
       session
     }).exec(
