@@ -63,6 +63,7 @@
         <executions>
           <execution>
             <goals>
+              <goal>compile</goal>
               <goal>testCompile</goal>
             </goals>
             <configuration>
