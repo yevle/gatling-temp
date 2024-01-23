@@ -5,7 +5,7 @@ import io.gatling.core.structure.ChainBuilder
 import org.influxdb.{InfluxDB, InfluxDBFactory}
 
 object DbClient {
-  val url = "http://localhost:8653"
+  val url = "http://influxdb:8653"
   val username = "admin"
   val password = "admin"
   val database = "graphite"
