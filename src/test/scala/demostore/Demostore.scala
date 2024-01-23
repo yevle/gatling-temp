@@ -1,8 +1,6 @@
 package demostore
 
-import com.influxdb.client.{InfluxDBClient, InfluxDBClientFactory}
 import demostore.pageObjects._
-import demostore.utils.WriteMetricToInfluxDB
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
@@ -11,23 +9,13 @@ import scala.util.Random
 
 class Demostore extends Simulation {
 
-  // Change credentials from InfluxDB
-  val url = "http://localhost:8086"
-  val token = "7y03OntLARLN7Atald_mWjb_SLlnBZxDIZRaPbq3lZC6BmOSXWoG6kavGWQrJQX5trQWBH4tT82y714uYoUcvg=="
-  val org = "Solvd"
-  val bucket = "Gatling"
-  val client: InfluxDBClient = InfluxDBClientFactory.create(url, token.toCharArray)
-
-  val metricWriter = new WriteMetricToInfluxDB(org, bucket)
-
-
   val DOMAIN = "demostore.gatling.io"
   private val httpProtocol = http
     .baseUrl(s"http://${DOMAIN}")
 
   def userCount = getProperty("USERS", "5").toInt
 
-  def rampDuration = getProperty("RAMP_DURATION", "5").toInt
+  def rampDuration = getProperty("RAMP_DURATION", "10").toInt
 
   def testDuration = getProperty("TEST_DURATION", "30").toInt
 
@@ -61,7 +49,6 @@ class Demostore extends Simulation {
   private val scn = scenario("Recorded Demostore")
     .exec(initSession)
     .exec(CmsPages.homePage)
-    .exec(metricWriter.writeResponseTime(client, "Test1", "HomePage"))
     .pause(1)
     .exec(CmsPages.aboutUsPage)
     .pause(1)
@@ -124,7 +111,14 @@ class Demostore extends Simulation {
   }
 
   object Scenarios {
-
+    def default = scenario("Default Load Test")
+      .during(testDuration) {
+        randomSwitch(
+          75d -> exec(UserJourneys.browseStore),
+          15d -> exec(UserJourneys.abandonCart),
+          10d -> exec(UserJourneys.completePurchase)
+        )
+      }
 
     def highPurchase = scenario("High Purchase Scenario")
       .during(testDuration) {
@@ -134,35 +128,23 @@ class Demostore extends Simulation {
           40d -> exec(UserJourneys.completePurchase)
         )
       }
-
-    def default = scenario("Default Load Test")
-      .during(testDuration) {
-        randomSwitch(
-          75d -> exec(UserJourneys.browseStore),
-          15d -> exec(UserJourneys.abandonCart),
-          10d -> exec(UserJourneys.completePurchase)
-        )
-      }
   }
 
-  // Parallel or consecutive scenarios
+//  setUp(
+//    scn.inject(
+//      constantUsersPerSec(1).during(10)
+//    ).protocols(httpProtocol))
 
-  setUp(Scenarios.default
-    .inject(rampUsers(userCount).during(rampDuration))
-    .protocols(httpProtocol)
-    .andThen(Scenarios.highPurchase // remove andThen and paste comma for parallel simulation
+    setUp(Scenarios.default
       .inject(rampUsers(userCount).during(rampDuration))
-      .protocols(httpProtocol))
-  ).assertions(
-    global.responseTime.max.lt(3),
-    global.successfulRequests.percent.gt(99)
-  )
-
-  //  Constant User Per Second
-  //  setUp(
-  //    scn.inject(
-  //      constantUsersPerSec(1).during(10)
-  //    ).protocols(httpProtocol))
+      .protocols(httpProtocol)
+      .andThen(Scenarios.highPurchase                      // remove andThen and paste comma for parallel simulation
+        .inject(rampUsers(userCount).during(rampDuration))
+        .protocols(httpProtocol))
+//    ).assertions(
+//      global.responseTime.max.lt(1000),                     // Global assertions
+//      global.successfulRequests.percent.gt(90)
+    ).maxDuration(testDuration)
 
   // Open Model Simulation
   //  setUp(scn.inject(
@@ -193,5 +175,4 @@ class Demostore extends Simulation {
   //  jumpToRps(20),
   //  holdFor(20)
   //).maxDuration(90)
-
 }
